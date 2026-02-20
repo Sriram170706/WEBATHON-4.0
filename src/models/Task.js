@@ -116,6 +116,27 @@ const TaskSchema = new mongoose.Schema(
             type: Boolean,
             default: null,
         },
+        /**
+         * Freelancer's submission note (what they did / deliverables)
+         */
+        submissionNote: {
+            type: String,
+            default: null,
+        },
+        /**
+         * Optional URL the freelancer shares (GitHub, Drive, deployed link, etc.)
+         */
+        submissionUrl: {
+            type: String,
+            default: null,
+        },
+        /**
+         * When the freelancer submitted their work
+         */
+        submittedAt: {
+            type: Date,
+            default: null,
+        },
     },
     { timestamps: true }
 );

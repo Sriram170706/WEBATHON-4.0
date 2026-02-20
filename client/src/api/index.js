@@ -42,7 +42,12 @@ export const getTaskApplicants = (id) => api.get(`/tasks/task/${id}/applicants`)
 // ── TASK ACTIONS ──────────────────────────────────────────────────
 export const applyToTask = (taskId, data) => api.post(`/tasks/apply/${taskId}`, data);
 export const selectFreelancer = (taskId, fId) => api.post(`/tasks/select/${taskId}/${fId}`);
-export const completeTask = (taskId) => api.post(`/tasks/complete/${taskId}`);
+export const completeTask = (taskId, data = {}) => api.post(`/tasks/complete/${taskId}`, data);
 export const rateTask = (taskId, data) => api.post(`/tasks/rate/${taskId}`, data);
+export const getTaskById = (taskId) => api.get(`/tasks/task-detail/${taskId}`);
+
+// ── MESSAGING ─────────────────────────────────────────────────────
+export const getMessages = (taskId) => api.get(`/tasks/${taskId}/messages`);
+export const sendMessage = (taskId, text) => api.post(`/tasks/${taskId}/messages`, { text });
 
 export default api;

@@ -37,6 +37,7 @@ const FreelancerDashboard = () => {
 
     const domains = data?.domains ?? [];
     const activeTasks = data?.activeTasks ?? [];
+    const inProgressTasks = activeTasks.filter(t => t.status === 'InProgress' || t.status === 'Open');
 
     const totalCompleted = domains.reduce((s, d) => s + (d.completedTasks || 0), 0);
     const avgQuality = domains.length
@@ -47,7 +48,7 @@ const FreelancerDashboard = () => {
         { icon: CheckCircle, label: 'Tasks Completed', value: totalCompleted, color: '#059669', delay: 0.1 },
         { icon: Star, label: 'Avg Quality Score', value: avgQuality, sub: 'across all domains', color: '#d97706', delay: 0.2 },
         { icon: Globe, label: 'Active Domains', value: domains.length, color: '#0891b2', delay: 0.3 },
-        { icon: Briefcase, label: 'Active Tasks', value: activeTasks.length, color: '#7c3aed', delay: 0.4 },
+        { icon: Briefcase, label: 'Active Tasks', value: inProgressTasks.length, color: '#7c3aed', delay: 0.4 },
     ] : [];
 
     return (
@@ -68,14 +69,14 @@ const FreelancerDashboard = () => {
                 </div>
 
                 {/* Active Tasks */}
-                {activeTasks.length > 0 && (
+                {inProgressTasks.length > 0 && (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
                         className="glass rounded-2xl" style={{ padding: '2rem', marginBottom: '2.5rem' }}>
                         <h2 style={{ fontSize: '1.125rem', fontWeight: 700, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.625rem', marginBottom: '1.25rem' }}>
                             <Clock size={20} style={{ color: '#6366f1' }} /> Active Tasks
                         </h2>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
-                            {activeTasks.map(t => (
+                            {inProgressTasks.map(t => (
                                 <div key={t._id} className="flex items-center justify-between rounded-xl"
                                     style={{ padding: '1rem 1.25rem', background: '#f8fafc', border: '1px solid #e2e8f0' }}>
                                     <div>

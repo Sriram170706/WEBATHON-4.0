@@ -55,7 +55,7 @@ function App() {
               <FreelancerMyTasks />
             </ProtectedRoute>
           } />
-          <Route path="/task/:id" element={
+          <Route path="/tasks/:id" element={
             <ProtectedRoute>
               <TaskDetail />
             </ProtectedRoute>

@@ -131,31 +131,28 @@ const Sidebar = ({ open, onClose, isClient }) => {
 const Topbar = ({ onMenuClick, isClient }) => {
     const { user } = useAuth();
     return (
-        <div className="sticky top-0 z-30 flex items-center gap-4 px-6 py-4"
-            style={{ background: '#ffffff', borderBottom: '1px solid #e2e8f0', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
+        <div className="sticky top-0 z-30 flex items-center gap-4 px-6 py-6"
+            style={{ background: '#ffffff', borderBottom: '1px solid #e2e8f0', boxShadow: '0 1px 6px rgba(0,0,0,0.07)', paddingRight: '2.5rem' }}>
             <button onClick={onMenuClick}
-                className="w-10 h-10 rounded-xl flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition-all border border-white/10">
-                <Menu size={20} />
+                className="w-11 h-11 rounded-xl flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition-all border border-white/10">
+                <Menu size={22} />
             </button>
-            <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg flex items-center justify-center"
+            <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center"
                     style={{ background: 'linear-gradient(135deg,#6366f1,#06b6d4)' }}>
-                    <Zap size={14} className="text-white" />
+                    <Zap size={17} className="text-white" />
                 </div>
-                <span className="text-base font-bold gradient-brand">MicroWork</span>
+                <span className="text-lg font-bold gradient-brand">MicroWork</span>
             </div>
             <div className="flex-1" />
-            <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold"
+            <div className="flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold text-white"
                     style={{ background: 'linear-gradient(135deg,#6366f1,#818cf8)' }}>
                     {user?.name?.[0]?.toUpperCase()}
                 </div>
-                <div className="hidden sm:block">
-                    <p className="text-sm font-semibold text-slate-200 leading-none">{user?.name}</p>
-                    <p className="text-xs text-slate-500 capitalize">{user?.role}</p>
-                </div>
             </div>
         </div>
+
     );
 };
 

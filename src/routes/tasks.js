@@ -84,6 +84,42 @@ router.get('/available-tasks', protect, requireFreelancer, async (req, res) => {
     }
 });
 
+/**
+ * GET /api/tasks/task-detail/:id
+ * Returns a single task. Accessible by the assigned freelancer, client,
+ * or any applicant. Uses a direct $or query — no populate-based access check.
+ */
+router.get('/task-detail/:id', protect, async (req, res) => {
+    try {
+        const uid = req.user._id;
+
+        // First check access via direct query
+        const access = await Task.exists({
+            _id: req.params.id,
+            $or: [
+                { clientId: uid },
+                { selectedFreelancerId: uid },
+                { 'applicants.freelancerId': uid },
+            ],
+        });
+
+        if (!access) {
+            // Also let the task owner (client) always see it
+            const task403 = await Task.findById(req.params.id);
+            if (!task403) return res.status(404).json({ success: false, message: 'Task not found' });
+            return res.status(403).json({ success: false, message: 'Access denied' });
+        }
+
+        const task = await Task.findById(req.params.id)
+            .populate('clientId', 'name email')
+            .populate('selectedFreelancerId', 'name email');
+
+        return res.status(200).json({ success: true, task });
+    } catch (err) {
+        return res.status(500).json({ success: false, message: err.message });
+    }
+});
+
 // ─────────────────────────────────────────────
 // CLIENT ROUTES
 // ─────────────────────────────────────────────
@@ -204,9 +240,21 @@ router.post('/select/:taskId/:freelancerId', protect, requireClient, async (req,
 /**
  * POST /api/tasks/complete/:taskId
  * Selected freelancer marks the task as complete.
+ * Body (optional): { submissionNote, submissionUrl }
  */
 router.post('/complete/:taskId', protect, requireFreelancer, async (req, res) => {
     try {
+        const { submissionNote, submissionUrl } = req.body || {};
+
+        // Save submission fields before marking complete
+        if (submissionNote || submissionUrl) {
+            await Task.findByIdAndUpdate(req.params.taskId, {
+                submissionNote: submissionNote || null,
+                submissionUrl: submissionUrl || null,
+                submittedAt: new Date(),
+            });
+        }
+
         const task = await TaskService.completeTask(req.params.taskId, req.user._id);
         return res.status(200).json({
             success: true,
@@ -264,6 +312,71 @@ router.post('/rate/:taskId', protect, requireClient, async (req, res) => {
         });
     } catch (err) {
         return res.status(err.statusCode || 500).json({ success: false, message: err.message });
+    }
+});
+
+// ─────────────────────────────────────────────
+// MESSAGING ROUTES
+// ─────────────────────────────────────────────
+const Message = require('../models/Message');
+
+/**
+ * GET /api/tasks/:id/messages
+ * Returns all messages for a specific task.
+ * Access: task's clientId OR selectedFreelancerId only.
+ */
+router.get('/:id/messages', protect, async (req, res) => {
+    try {
+        const task = await Task.findById(req.params.id).select('clientId selectedFreelancerId');
+        if (!task) return res.status(404).json({ success: false, message: 'Task not found' });
+
+        const uid = req.user._id.toString();
+        const isClient = task.clientId?.toString() === uid;
+        const isFreelancer = task.selectedFreelancerId?.toString() === uid;
+        if (!isClient && !isFreelancer) {
+            return res.status(403).json({ success: false, message: 'Access denied' });
+        }
+
+        const messages = await Message.find({ taskId: req.params.id }).sort({ createdAt: 1 });
+        return res.status(200).json({ success: true, messages });
+    } catch (err) {
+        return res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+/**
+ * POST /api/tasks/:id/messages
+ * Send a message on a task thread.
+ * Access: task's clientId OR selectedFreelancerId only.
+ */
+router.post('/:id/messages', protect, async (req, res) => {
+    try {
+        const { text } = req.body;
+        if (!text?.trim()) {
+            return res.status(400).json({ success: false, message: 'Message text is required' });
+        }
+
+        const task = await Task.findById(req.params.id).select('clientId selectedFreelancerId');
+        if (!task) return res.status(404).json({ success: false, message: 'Task not found' });
+
+        const uid = req.user._id.toString();
+        const isClient = task.clientId?.toString() === uid;
+        const isFreelancer = task.selectedFreelancerId?.toString() === uid;
+        if (!isClient && !isFreelancer) {
+            return res.status(403).json({ success: false, message: 'Access denied' });
+        }
+
+        const msg = await Message.create({
+            taskId: req.params.id,
+            senderId: req.user._id,
+            senderName: req.user.name,
+            senderRole: isClient ? 'client' : 'freelancer',
+            text: text.trim(),
+        });
+
+        return res.status(201).json({ success: true, message: msg });
+    } catch (err) {
+        return res.status(500).json({ success: false, message: err.message });
     }
 });
 

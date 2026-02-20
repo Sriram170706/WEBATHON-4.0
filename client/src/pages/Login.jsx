@@ -41,7 +41,7 @@ const FeaturePill = ({ icon: Icon, text, color, delay }) => (
         <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" style={{ background: `${color}22` }}>
             <Icon size={18} style={{ color }} />
         </div>
-        <span className="text-slate-200 text-base font-medium">{text}</span>
+        <span className="text-base font-medium" style={{ color: '#000000' }}>{text}</span>
     </motion.div>
 );
 
@@ -90,11 +90,8 @@ const Login = () => {
                 initial={{ opacity: 0, x: -60 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8, ease: 'easeOut' }}
-                className="hidden lg:flex flex-col justify-between w-[52%] relative p-14 overflow-hidden"
-                style={{
-                    background: 'linear-gradient(145deg, rgba(99,102,241,0.12) 0%, rgba(6,182,212,0.06) 50%, rgba(16,185,129,0.08) 100%)',
-                    borderRight: '1px solid rgba(255,255,255,0.06)',
-                }}
+                className="hidden lg:flex flex-col justify-between w-[52%] relative overflow-hidden"
+                style={{ padding: '4rem', borderRight: '1px solid rgba(255,255,255,0.06)', background: 'linear-gradient(145deg, rgba(99,102,241,0.12) 0%, rgba(6,182,212,0.06) 50%, rgba(16,185,129,0.08) 100%)' }}
             >
                 <GridLines />
 
@@ -125,20 +122,16 @@ const Login = () => {
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.3, duration: 0.8 }}
-                        className="text-7xl font-black leading-tight text-white mb-6"
+                        className="text-7xl font-black text-white"
+                        style={{ lineHeight: 1.18, marginBottom: '4.5rem' }}
                     >
                         Where talent
                         <br />
                         meets{' '}
                         <span className="gradient-text">opportunity</span>
                     </motion.h1>
-                    <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.5, duration: 0.7 }}
-                        className="text-slate-300 text-xl leading-relaxed mb-10 max-w-lg">
-                        A two-segment freelance ecosystem that rewards genuine quality with domain-aware scoring, fair pricing AI, and a 70-30 rookie protection pool.
-                    </motion.p>
 
-                    <div className="space-y-3">
+                    <div className="space-y-5">
                         <FeaturePill icon={Star} text="Domain-wise quality scoring (1–5 stars)" color="#f59e0b" delay={0.6} />
                         <FeaturePill icon={Shield} text="Reliability tracking per domain" color="#06b6d4" delay={0.7} />
                         <FeaturePill icon={TrendingUp} text="Four-level progression system" color="#10b981" delay={0.8} />
@@ -168,7 +161,8 @@ const Login = () => {
                 initial={{ opacity: 0, x: 60 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8, ease: 'easeOut' }}
-                className="flex-1 flex items-center justify-center p-8 relative"
+                className="flex-1 flex items-center justify-center relative"
+                style={{ padding: '3.5rem' }}
             >
                 <div className="w-full max-w-md">
 
@@ -196,13 +190,13 @@ const Login = () => {
 
                     {/* Form */}
                     <motion.form onSubmit={submit} initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                        transition={{ delay: 0.4 }} className="space-y-5">
+                        transition={{ delay: 0.4 }} className="space-y-8">
 
                         {/* Email */}
                         <div className="relative">
                             <label className="text-base text-slate-300 font-semibold mb-2.5 block">Email Address</label>
                             <div className="relative">
-                                <div className="absolute left-4 top-0 bottom-0 flex items-center pointer-events-none">
+                                <div className="absolute left-4 top-0 bottom-0 flex items-center pointer-events-none" style={{ zIndex: 2 }}>
                                     <Mail size={20} style={{
                                         color: focused === 'email' ? '#818cf8' : '#64748b',
                                         transition: 'color 0.2s ease'
@@ -212,12 +206,15 @@ const Login = () => {
                                     name="email" type="email" value={form.email} onChange={onChange}
                                     onFocus={() => setFocused('email')} onBlur={() => setFocused('')}
                                     placeholder="you@example.com" required
-                                    className="input-field pl-12 text-base py-4"
-                                    style={focused === 'email' ? {
-                                        borderColor: 'rgba(99,102,241,0.7)',
-                                        boxShadow: '0 0 0 3px rgba(99,102,241,0.12), 0 0 20px rgba(99,102,241,0.08)',
-                                        background: 'rgba(99,102,241,0.06)',
-                                    } : {}}
+                                    className="input-field text-base py-4"
+                                    style={{
+                                        paddingLeft: '3rem',
+                                        ...(focused === 'email' ? {
+                                            borderColor: 'rgba(99,102,241,0.7)',
+                                            boxShadow: '0 0 0 3px rgba(99,102,241,0.12), 0 0 20px rgba(99,102,241,0.08)',
+                                            background: 'rgba(99,102,241,0.06)',
+                                        } : {})
+                                    }}
                                 />
                             </div>
                         </div>
@@ -231,7 +228,7 @@ const Login = () => {
                                 </span>
                             </div>
                             <div className="relative">
-                                <div className="absolute left-4 top-0 bottom-0 flex items-center pointer-events-none">
+                                <div className="absolute left-4 top-0 bottom-0 flex items-center pointer-events-none" style={{ zIndex: 2 }}>
                                     <Lock size={20} style={{
                                         color: focused === 'password' ? '#818cf8' : '#64748b',
                                         transition: 'color 0.2s ease'
@@ -242,14 +239,18 @@ const Login = () => {
                                     value={form.password} onChange={onChange}
                                     onFocus={() => setFocused('password')} onBlur={() => setFocused('')}
                                     placeholder="Enter your password" required
-                                    className="input-field pl-12 pr-14 text-base py-4"
-                                    style={focused === 'password' ? {
-                                        borderColor: 'rgba(99,102,241,0.7)',
-                                        boxShadow: '0 0 0 3px rgba(99,102,241,0.12), 0 0 20px rgba(99,102,241,0.08)',
-                                        background: 'rgba(99,102,241,0.06)',
-                                    } : {}}
+                                    className="input-field text-base py-4"
+                                    style={{
+                                        paddingLeft: '3rem',
+                                        paddingRight: '3.5rem',
+                                        ...(focused === 'password' ? {
+                                            borderColor: 'rgba(99,102,241,0.7)',
+                                            boxShadow: '0 0 0 3px rgba(99,102,241,0.12), 0 0 20px rgba(99,102,241,0.08)',
+                                            background: 'rgba(99,102,241,0.06)',
+                                        } : {})
+                                    }}
                                 />
-                                <div className="absolute right-4 top-0 bottom-0 flex items-center">
+                                <div className="absolute right-4 top-0 bottom-0 flex items-center" style={{ zIndex: 2 }}>
                                     <button type="button" onClick={() => setShowPw(!showPw)}
                                         className="text-slate-500 hover:text-slate-200 transition-colors">
                                         {showPw ? <EyeOff size={19} /> : <Eye size={19} />}
@@ -264,7 +265,7 @@ const Login = () => {
                             disabled={loading}
                             whileHover={{ scale: loading ? 1 : 1.015 }}
                             whileTap={{ scale: 0.97 }}
-                            className="relative w-full py-4 rounded-xl text-white font-bold text-lg overflow-hidden mt-3"
+                            className="relative w-full py-5 rounded-2xl text-white font-bold text-xl overflow-hidden mt-3"
                             style={{
                                 background: 'linear-gradient(135deg, #6366f1, #4f46e5)',
                                 boxShadow: '0 0 30px rgba(99,102,241,0.4)',
@@ -309,7 +310,7 @@ const Login = () => {
                         <p className="text-slate-400 text-base mb-4">Don't have an account yet?</p>
                         <Link to="/register">
                             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-                                className="w-full py-4 rounded-xl text-base font-bold text-indigo-300 flex items-center justify-center gap-2 transition-all"
+                                className="w-full py-5 rounded-2xl text-lg font-bold text-indigo-300 flex items-center justify-center gap-2 transition-all"
                                 style={{
                                     background: 'rgba(99,102,241,0.09)',
                                     border: '1px solid rgba(99,102,241,0.3)',

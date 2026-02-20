@@ -15,7 +15,7 @@ const FreelancerMyTasks = () => {
                 const all = r.data?.activeTasks || [];
                 setTasks({
                     inProgress: all.filter(t => t.status === 'InProgress' || t.status === 'Open'),
-                    completed: r.data?.completedTasks || [],
+                    completed: all.filter(t => t.status === 'Completed'),
                 });
             }).catch(console.error).finally(() => setLoading(false));
         });
@@ -42,12 +42,17 @@ const FreelancerMyTasks = () => {
                             }}>
                             {showTimer ? 'In Progress' : 'Completed'}
                         </span>
+                        {!showTimer && task.rating && (
+                            <span style={{ fontSize: '0.875rem' }}>
+                                {Array.from({ length: 5 }, (_, i) => i < task.rating ? '⭐' : '☆').join('')}
+                            </span>
+                        )}
                     </div>
-                    <h3 className="text-lg font-bold text-white">{task.title}</h3>
+                    <h3 className="text-lg font-bold" style={{ color: '#0f172a' }}>{task.title}</h3>
                 </div>
                 <Link to={`/tasks/${task._id}`}
-                    className="flex items-center gap-1 text-sm text-indigo-400 hover:text-indigo-300 font-medium transition-colors shrink-0"
-                    style={{ marginTop: '0.25rem' }}>
+                    className="flex items-center gap-1 text-sm font-medium transition-colors shrink-0"
+                    style={{ marginTop: '0.25rem', color: '#6366f1' }}>
                     View Details <ArrowRight size={14} />
                 </Link>
             </div>
@@ -77,10 +82,11 @@ const FreelancerMyTasks = () => {
             <div>
                 <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
                     style={{ marginBottom: '2.5rem' }}>
-                    <h1 className="text-4xl font-black text-white flex items-center gap-3" style={{ marginBottom: '0.6rem' }}>
-                        <Briefcase size={30} className="text-indigo-400" /> My Tasks
+                    <h1 className="flex items-center gap-3"
+                        style={{ fontSize: '2rem', fontWeight: 900, color: '#0f172a', marginBottom: '0.5rem' }}>
+                        <Briefcase size={28} style={{ color: '#6366f1' }} /> My Tasks
                     </h1>
-                    <p className="text-slate-400 text-lg">Tasks you have been selected for.</p>
+                    <p style={{ color: '#64748b', fontSize: '1rem' }}>Tasks you have been selected for.</p>
                 </motion.div>
 
                 {loading ? (
@@ -93,7 +99,7 @@ const FreelancerMyTasks = () => {
                         <section style={{ marginBottom: '3rem' }}>
                             <div className="flex items-center gap-3" style={{ marginBottom: '1.25rem' }}>
                                 <div className="w-2.5 h-2.5 rounded-full bg-indigo-400 animate-pulse" />
-                                <h2 className="text-xl font-bold text-white">
+                                <h2 className="text-xl font-bold" style={{ color: '#0f172a' }}>
                                     In Progress ({tasks.inProgress.length})
                                 </h2>
                             </div>
@@ -115,7 +121,7 @@ const FreelancerMyTasks = () => {
                         <section>
                             <div className="flex items-center gap-3" style={{ marginBottom: '1.25rem' }}>
                                 <CheckCircle size={18} className="text-emerald-400" />
-                                <h2 className="text-xl font-bold text-white">
+                                <h2 className="text-xl font-bold" style={{ color: '#0f172a' }}>
                                     Completed ({tasks.completed.length})
                                 </h2>
                             </div>

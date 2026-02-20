@@ -1,7 +1,9 @@
+// MicroWork Platform API — v1.1 (task-detail route added)
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const connectDB = require('./src/config/db');
+
 
 // ── Routes ────────────────────────────────────────────────────────────────
 const authRoutes = require('./src/routes/auth');
