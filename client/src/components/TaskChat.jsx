@@ -70,7 +70,10 @@ const TaskChat = ({ taskId }) => {
             setMessages(data.messages ?? []);
             setLoadErr('');
         } catch (e) {
-            if (showErr) setLoadErr('Could not load messages.');
+            const status = e?.response?.status;
+            const msg = e?.response?.data?.message || e?.message || 'Unknown error';
+            console.error('[TaskChat] fetchMessages failed:', status, msg);
+            if (showErr) setLoadErr(`Could not load messages. (${status}: ${msg})`);
         }
     }, [taskId]);
 

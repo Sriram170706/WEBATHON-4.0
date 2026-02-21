@@ -71,10 +71,6 @@ const TaskDetail = () => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 {[1, 2].map(i => <div key={i} className="shimmer rounded-2xl" style={{ height: '8rem' }} />)}
             </div>
-
-            {task.selectedFreelancerId && (
-                <TaskChat taskId={id} />
-            )}
         </Layout>
     );
 
@@ -91,10 +87,6 @@ const TaskDetail = () => {
                     Back to Dashboard
                 </Link>
             </div>
-
-            {task.selectedFreelancerId && (
-                <TaskChat taskId={id} />
-            )}
         </Layout>
     );
 
@@ -374,7 +366,7 @@ const TaskDetail = () => {
                 </div>
             </div>
 
-            {task.selectedFreelancerId && (
+            {task.selectedFreelancerId && (isSelected || isClient) && (
                 <TaskChat taskId={id} />
             )}
         </Layout>

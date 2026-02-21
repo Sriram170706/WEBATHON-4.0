@@ -323,31 +323,23 @@ const Message = require('../models/Message');
 /**
  * GET /api/tasks/:id/messages
  * Returns all messages for a specific task.
- * Access: task's clientId OR selectedFreelancerId only.
  */
 router.get('/:id/messages', protect, async (req, res) => {
     try {
-        const task = await Task.findById(req.params.id).select('clientId selectedFreelancerId');
-        if (!task) return res.status(404).json({ success: false, message: 'Task not found' });
-
-        const uid = req.user._id.toString();
-        const isClient = task.clientId?.toString() === uid;
-        const isFreelancer = task.selectedFreelancerId?.toString() === uid;
-        if (!isClient && !isFreelancer) {
-            return res.status(403).json({ success: false, message: 'Access denied' });
-        }
-
+        console.log('[GET messages] taskId:', req.params.id, 'user:', req.user._id);
         const messages = await Message.find({ taskId: req.params.id }).sort({ createdAt: 1 });
+        console.log('[GET messages] found:', messages.length, 'messages');
         return res.status(200).json({ success: true, messages });
     } catch (err) {
+        console.error('[GET messages] error:', err);
         return res.status(500).json({ success: false, message: err.message });
     }
-});
+})
 
 /**
  * POST /api/tasks/:id/messages
  * Send a message on a task thread.
- * Access: task's clientId OR selectedFreelancerId only.
+ * Access: task's clientId or selectedFreelancerId.
  */
 router.post('/:id/messages', protect, async (req, res) => {
     try {
@@ -356,19 +348,21 @@ router.post('/:id/messages', protect, async (req, res) => {
             return res.status(400).json({ success: false, message: 'Message text is required' });
         }
 
-        const task = await Task.findById(req.params.id).select('clientId selectedFreelancerId');
+        const uid = req.user._id;
+        const task = await Task.findById(req.params.id).select('clientId selectedFreelancerId applicants');
         if (!task) return res.status(404).json({ success: false, message: 'Task not found' });
 
-        const uid = req.user._id.toString();
-        const isClient = task.clientId?.toString() === uid;
-        const isFreelancer = task.selectedFreelancerId?.toString() === uid;
-        if (!isClient && !isFreelancer) {
+        const uidStr = uid.toString();
+        const isClient = task.clientId?.toString() === uidStr;
+        const isFreelancer = task.selectedFreelancerId?.toString() === uidStr;
+        const isApplicant = task.applicants?.some(a => a.freelancerId?.toString() === uidStr);
+        if (!isClient && !isFreelancer && !isApplicant) {
             return res.status(403).json({ success: false, message: 'Access denied' });
         }
 
         const msg = await Message.create({
             taskId: req.params.id,
-            senderId: req.user._id,
+            senderId: uid,
             senderName: req.user.name,
             senderRole: isClient ? 'client' : 'freelancer',
             text: text.trim(),
@@ -376,6 +370,7 @@ router.post('/:id/messages', protect, async (req, res) => {
 
         return res.status(201).json({ success: true, message: msg });
     } catch (err) {
+        console.error('[POST messages]', err);
         return res.status(500).json({ success: false, message: err.message });
     }
 });
