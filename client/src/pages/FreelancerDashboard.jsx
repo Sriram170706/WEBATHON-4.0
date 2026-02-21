@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { getDashboard } from '../api';
 import Layout from '../components/Layout';
 import { useAuth } from '../context/AuthContext';
 import {
-    CheckCircle, Star, Globe, Briefcase, ArrowRight, Clock, TrendingUp
+    CheckCircle, Star, Globe, Briefcase, ArrowRight, Clock, TrendingUp, Plus
 } from 'lucide-react';
 
 const StatCard = ({ icon: Icon, label, value, sub, color, delay }) => (
@@ -29,6 +29,7 @@ const StatCard = ({ icon: Icon, label, value, sub, color, delay }) => (
 
 const FreelancerDashboard = () => {
     const { user } = useAuth();
+    const navigate = useNavigate();
     const [data, setData] = useState(null);
 
     useEffect(() => {
@@ -99,48 +100,69 @@ const FreelancerDashboard = () => {
                 )}
 
                 {/* Domain Overview */}
-                {domains.length > 0 && (
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}>
-                        <h2 style={{ fontSize: '1.125rem', fontWeight: 700, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.625rem', marginBottom: '1.25rem' }}>
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
+                        <h2 style={{ fontSize: '1.125rem', fontWeight: 700, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
                             <TrendingUp size={20} style={{ color: '#0891b2' }} /> Domain Overview
                         </h2>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
-                            {domains.map(d => (
-                                <div key={d.domainName} className="glass rounded-2xl card-hover"
-                                    style={{ padding: '1.75rem' }}>
-                                    <div style={{ marginBottom: '1.25rem' }}>
-                                        <p style={{ fontSize: '1.0625rem', fontWeight: 700, color: '#0f172a', marginBottom: '0.5rem' }}>{d.domainName}</p>
-                                        <div className="flex items-center gap-2">
-                                            <span style={{ fontSize: '0.75rem', padding: '0.2rem 0.625rem', borderRadius: '99px', fontWeight: 600, background: '#ede9fe', color: '#6d28d9' }}>
-                                                Level {d.level}
+                        <motion.button
+                            whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
+                            onClick={() => navigate('/add-domain')}
+                            style={{
+                                display: 'flex', alignItems: 'center', gap: '0.375rem',
+                                padding: '0.5rem 1rem', borderRadius: '10px', border: 'none',
+                                background: 'linear-gradient(135deg, #6366f1, #4f46e5)',
+                                color: '#fff', fontSize: '0.8125rem', fontWeight: 700,
+                                cursor: 'pointer', boxShadow: '0 2px 12px rgba(99,102,241,0.35)',
+                            }}>
+                            <Plus size={14} /> Add Domain
+                        </motion.button>
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
+                        {domains.map(d => (
+                            <div key={d.domainName} className="glass rounded-2xl card-hover"
+                                style={{ padding: '1.75rem' }}>
+                                <div style={{ marginBottom: '1.25rem' }}>
+                                    <p style={{ fontSize: '1.0625rem', fontWeight: 700, color: '#0f172a', marginBottom: '0.5rem' }}>{d.domainName}</p>
+                                    <div className="flex items-center gap-2">
+                                        <span style={{ fontSize: '0.75rem', padding: '0.2rem 0.625rem', borderRadius: '99px', fontWeight: 600, background: '#ede9fe', color: '#6d28d9' }}>
+                                            Level {d.level}
+                                        </span>
+                                        {new Date(d.beginnerBoostExpiresAt) > new Date() && (
+                                            <span style={{ fontSize: '0.75rem', padding: '0.2rem 0.625rem', borderRadius: '99px', fontWeight: 600, background: '#fef3c7', color: '#92400e' }}>
+                                                ⚡ Beginner Boost
                                             </span>
-                                            {new Date(d.beginnerBoostExpiresAt) > new Date() && (
-                                                <span style={{ fontSize: '0.75rem', padding: '0.2rem 0.625rem', borderRadius: '99px', fontWeight: 600, background: '#fef3c7', color: '#92400e' }}>
-                                                    ⚡ Beginner Boost
-                                                </span>
-                                            )}
-                                        </div>
-                                    </div>
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '1.25rem' }}>
-                                        <div>
-                                            <p style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 500, marginBottom: '0.35rem' }}>Quality Score</p>
-                                            <p style={{ fontSize: '1.75rem', fontWeight: 900, color: '#d97706' }}>{d.qualityScore?.toFixed(1)}</p>
-                                        </div>
-                                        <div>
-                                            <p style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 500, marginBottom: '0.35rem' }}>Reliability</p>
-                                            <p style={{ fontSize: '1.75rem', fontWeight: 900, color: '#059669' }}>{d.reliabilityScore}%</p>
-                                        </div>
-                                    </div>
-                                    <div style={{ paddingTop: '1rem', borderTop: '1px solid #e2e8f0' }}>
-                                        <p style={{ fontSize: '0.8125rem', color: '#94a3b8' }}>
-                                            {d.completedTasks} task{d.completedTasks !== 1 ? 's' : ''} done
-                                        </p>
+                                        )}
                                     </div>
                                 </div>
-                            ))}
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '1.25rem' }}>
+                                    <div>
+                                        <p style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 500, marginBottom: '0.35rem' }}>Quality Score</p>
+                                        <p style={{ fontSize: '1.75rem', fontWeight: 900, color: '#d97706' }}>{d.qualityScore?.toFixed(1)}</p>
+                                    </div>
+                                    <div>
+                                        <p style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 500, marginBottom: '0.35rem' }}>Reliability</p>
+                                        <p style={{ fontSize: '1.75rem', fontWeight: 900, color: '#059669' }}>{d.reliabilityScore}%</p>
+                                    </div>
+                                </div>
+                                <div style={{ paddingTop: '1rem', borderTop: '1px solid #e2e8f0' }}>
+                                    <p style={{ fontSize: '0.8125rem', color: '#94a3b8' }}>
+                                        {d.completedTasks} task{d.completedTasks !== 1 ? 's' : ''} done
+                                    </p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Empty state when no domains yet */}
+                    {domains.length === 0 && (
+                        <div className="glass rounded-2xl" style={{ padding: '3rem', textAlign: 'center', border: '1px dashed #c4b5fd' }}>
+                            <Globe size={36} style={{ color: '#a5b4fc', margin: '0 auto 1rem' }} />
+                            <p style={{ fontWeight: 600, color: '#0f172a', marginBottom: '0.375rem' }}>No domains yet</p>
+                            <p style={{ color: '#94a3b8', fontSize: '0.875rem' }}>Click "Add Domain" above to get started.</p>
                         </div>
-                    </motion.div>
-                )}
+                    )}
+                </motion.div>
             </div>
         </Layout>
     );

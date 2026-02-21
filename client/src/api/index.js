@@ -33,6 +33,7 @@ export const login = (data) => api.post('/auth/login', data);
 export const getDashboard = () => api.get('/tasks/dashboard');
 export const getMyDomains = () => api.get('/tasks/my-domains');
 export const getAvailableTasks = (params) => api.get('/tasks/available-tasks', { params });
+export const addDomain = (domainName) => api.patch('/tasks/add-domain', { domainName });
 
 // ── CLIENT ────────────────────────────────────────────────────────
 export const createTask = (data) => api.post('/tasks/create-task', data);

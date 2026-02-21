@@ -12,6 +12,7 @@ import Performance from './pages/Performance';
 import AvailableTasks from './pages/AvailableTasks';
 import FreelancerMyTasks from './pages/FreelancerMyTasks';
 import TaskDetail from './pages/TaskDetail';
+import AddDomain from './pages/AddDomain';
 
 // Client pages
 import ClientDashboard from './pages/ClientDashboard';
@@ -58,6 +59,11 @@ function App() {
           <Route path="/tasks/:id" element={
             <ProtectedRoute>
               <TaskDetail />
+            </ProtectedRoute>
+          } />
+          <Route path="/add-domain" element={
+            <ProtectedRoute requireFreelancer>
+              <AddDomain />
             </ProtectedRoute>
           } />
 

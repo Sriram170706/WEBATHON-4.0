@@ -194,6 +194,70 @@ router.get('/task/:id/applicants', protect, requireClient, async (req, res) => {
 });
 
 // ─────────────────────────────────────────────
+// ADD DOMAIN ROUTE
+// ─────────────────────────────────────────────
+
+const ALLOWED_DOMAINS = [
+    'Web Development', 'Mobile Development', 'Graphic Design', 'Content Writing',
+    'Video Editing', 'Data Science', 'UI/UX Design', 'Digital Marketing',
+    'Copywriting', 'SEO', 'Photography', 'Animation', 'Voice Over', 'Translation',
+    'App Development', 'Game Development', 'Cybersecurity', 'Cloud Computing',
+];
+
+/**
+ * PATCH /api/tasks/add-domain
+ * Adds a new domain to the authenticated freelancer's profile.
+ * Body: { domainName: string }
+ */
+router.patch('/add-domain', protect, requireFreelancer, async (req, res) => {
+    try {
+        const { domainName } = req.body;
+
+        if (!domainName || !domainName.trim()) {
+            return res.status(400).json({ success: false, message: 'domainName is required' });
+        }
+
+        const trimmed = domainName.trim();
+
+        if (!ALLOWED_DOMAINS.includes(trimmed)) {
+            return res.status(400).json({ success: false, message: `"${trimmed}" is not a valid domain` });
+        }
+
+        const user = req.user;
+        const alreadyExists = user.domains.some(
+            (d) => d.domainName.toLowerCase() === trimmed.toLowerCase()
+        );
+
+        if (alreadyExists) {
+            return res.status(409).json({ success: false, message: `You already have "${trimmed}" in your profile` });
+        }
+
+        user.domains.push({
+            domainName: trimmed,
+            qualityScore: 0,
+            reliabilityScore: 100,
+            level: 1,
+            completedTasks: 0,
+            beginnerBoostExpiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+            cancellations: 0,
+            onTimeCompletions: 0,
+            totalAssigned: 0,
+            ratingSum: 0,
+        });
+
+        await user.save();
+
+        return res.status(200).json({
+            success: true,
+            message: `"${trimmed}" added to your profile!`,
+            domains: user.domains,
+        });
+    } catch (err) {
+        return res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// ─────────────────────────────────────────────
 // TASK ACTION ROUTES
 // ─────────────────────────────────────────────
 
@@ -326,9 +390,17 @@ const Message = require('../models/Message');
  */
 router.get('/:id/messages', protect, async (req, res) => {
     try {
-        console.log('[GET messages] taskId:', req.params.id, 'user:', req.user._id);
+        const uid = req.user._id.toString();
+        const task = await Task.findById(req.params.id).select('clientId selectedFreelancerId');
+        if (!task) return res.status(404).json({ success: false, message: 'Task not found' });
+
+        const isClient = task.clientId?.toString() === uid;
+        const isFreelancer = task.selectedFreelancerId?.toString() === uid;
+        if (!isClient && !isFreelancer) {
+            return res.status(403).json({ success: false, message: 'Access denied: chat is only available to the client and assigned freelancer' });
+        }
+
         const messages = await Message.find({ taskId: req.params.id }).sort({ createdAt: 1 });
-        console.log('[GET messages] found:', messages.length, 'messages');
         return res.status(200).json({ success: true, messages });
     } catch (err) {
         console.error('[GET messages] error:', err);

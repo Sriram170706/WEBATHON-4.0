@@ -154,7 +154,7 @@ const TaskChat = ({ taskId }) => {
                         <Bubble
                             key={msg._id}
                             msg={msg}
-                            isOwn={msg.senderId === user?._id || msg.senderName === user?.name}
+                            isOwn={String(msg.senderId) === String(user?._id)}
                         />
                     ))}
                 </AnimatePresence>

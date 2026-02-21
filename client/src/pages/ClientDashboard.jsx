@@ -5,7 +5,7 @@ import { getMyTasks } from '../api';
 import Layout from '../components/Layout';
 import {
     ListTodo, Clock, Users, CheckCircle, Circle,
-    Play, ExternalLink, ChevronDown, ChevronUp, FileCheck
+    Play, ExternalLink, ChevronDown, ChevronUp, FileCheck, MessageSquare
 } from 'lucide-react';
 
 const statusConfig = {
@@ -56,6 +56,14 @@ const TaskRow = ({ task, idx }) => {
                         <Link to={`/client/task/${task._id}/applicants`}
                             style={{ fontSize: '0.8125rem', fontWeight: 600, padding: '0.5rem 1rem', borderRadius: '10px', background: '#ede9fe', color: '#6d28d9', border: '1px solid #c4b5fd', textDecoration: 'none' }}>
                             View Applicants
+                        </Link>
+                    )}
+                    {/* Chat button: visible for InProgress/Completed tasks that have an assigned freelancer */}
+                    {task.selectedFreelancerId && (task.status === 'InProgress' || task.status === 'Completed') && (
+                        <Link to={`/tasks/${task._id}`}
+                            className="flex items-center gap-1"
+                            style={{ fontSize: '0.8125rem', fontWeight: 600, padding: '0.5rem 1rem', borderRadius: '10px', background: '#ede9fe', color: '#6d28d9', border: '1px solid #c4b5fd', textDecoration: 'none' }}>
+                            <MessageSquare size={13} /> Open Chat
                         </Link>
                     )}
                     {hasSubmission && (
