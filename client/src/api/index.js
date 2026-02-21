@@ -32,6 +32,7 @@ export const login = (data) => api.post('/auth/login', data);
 // ── FREELANCER ────────────────────────────────────────────────────
 export const getDashboard = () => api.get('/tasks/dashboard');
 export const getMyDomains = () => api.get('/tasks/my-domains');
+export const getMyApplications = () => api.get('/tasks/my-applications');
 export const getAvailableTasks = (params) => api.get('/tasks/available-tasks', { params });
 export const addDomain = (domainName) => api.patch('/tasks/add-domain', { domainName });
 

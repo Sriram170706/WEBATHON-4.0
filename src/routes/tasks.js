@@ -63,6 +63,31 @@ router.get('/my-domains', protect, requireFreelancer, async (req, res) => {
 });
 
 /**
+ * GET /api/tasks/my-applications
+ * Returns all tasks the freelancer has applied to, with application outcome.
+ * Excludes tasks where the freelancer is already the selectedFreelancerId
+ * (those already appear under "My Tasks" / active tasks).
+ */
+router.get('/my-applications', protect, requireFreelancer, async (req, res) => {
+    try {
+        const uid = req.user._id;
+
+        const tasks = await Task.find({
+            'applicants.freelancerId': uid,
+            selectedFreelancerId: { $ne: uid },   // exclude tasks they won
+        })
+            .select('title domain budget status selectedFreelancerId createdAt')
+            .sort({ createdAt: -1 });
+
+        return res.status(200).json({ success: true, applications: tasks });
+    } catch (err) {
+        return res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+
+
+/**
  * GET /api/tasks/available-tasks
  * Lists all Open tasks.
  * Optional query: ?domain=WebDev&segment=Individual
